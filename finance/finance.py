@@ -8,17 +8,26 @@ from utils.date_utils import ConvertDate
 
 
 class Ticker:
-    def __init__(self, ticker_datetime: str, mid_price: int, volume: int) -> None:
-        self.datetime = ticker_datetime
-        self.mid_price = mid_price
-        self.volume = volume
+    def __init__(self, ticker_datetime: str, mid_price: float, volume: int) -> None:
+        self._datetime = ticker_datetime
+        self._mid_price = mid_price
+        self._volume = volume
+
+    def get_datetime(self) -> str:
+        return self._datetime
+
+    def get_mid_price(self) -> float:
+        return self._mid_price
+
+    def get_volume(self) -> float:
+        return self._volume
 
     @classmethod
-    def _get_ticker_mid_price(cls, ticker):
+    def _get_ticker_mid_price(cls, ticker) -> float:
         return (ticker['best_ask'] + ticker['best_bid']) / 2
 
     @classmethod
-    def _get_ticker_volume(cls, ticker):
+    def _get_ticker_volume(cls, ticker) -> float:
         return ticker['volume']
 
     @classmethod
@@ -34,34 +43,34 @@ class Ticker:
             mid_price = cls._get_ticker_mid_price(ticker)
             volume = cls._get_ticker_volume(ticker)
 
-            return Ticker(ticker_datetime, mid_price, volume)
+            return cls(ticker_datetime, mid_price, volume)
 
 
 class Candle:
     def __init__(self, ticker: Ticker):
         self._candles = pd.DataFrame(
             {
-                'High': ticker.mid_price,
-                'Open': ticker.mid_price,
-                'Low': ticker.mid_price,
-                'Close': ticker.mid_price,
-                'Volume': ticker.volume,
-            }, index=[ticker.datetime])
+                'High': ticker.get_mid_price(),
+                'Open': ticker.get_mid_price(),
+                'Low': ticker.get_mid_price(),
+                'Close': ticker.get_mid_price(),
+                'Volume': ticker.get_volume(),
+            }, index=[ticker.get_datetime()])
         self._candles.index.name = 'Date'
         self._is_generated = False
 
-    def create_candle(self, ticker: Ticker) -> None:
-        if ticker.datetime in self._candles.index:
+    def create_candle(self, ticker: Ticker) -> pd.DataFrame:
+        if ticker.get_datetime() in self._candles.index:
             self._is_generated = False
             return self._update_candle(ticker)
 
         new_ticker = {
-            ticker.datetime: [
-                ticker.mid_price,
-                ticker.mid_price,
-                ticker.mid_price,
-                ticker.mid_price,
-                ticker.volume
+            ticker.get_datetime(): [
+                ticker.get_mid_price(),
+                ticker.get_mid_price(),
+                ticker.get_mid_price(),
+                ticker.get_mid_price(),
+                ticker.get_volume()
             ]
         }
         self._candles = pd.concat(
@@ -75,22 +84,26 @@ class Candle:
         self._is_generated = True
         return self._candles
 
-    def _update_candle(self, ticker: Ticker) -> None:
-        if self._candles.loc[ticker.datetime]['High'] < ticker.mid_price:
-            self._candles.loc[ticker.datetime, 'High'] = ticker.mid_price
+    def _update_candle(self, ticker: Ticker) -> pd.DataFrame:
+        if self._candles.loc[ticker.get_datetime()]['High'] < ticker.get_mid_price():
+            self._candles.loc[ticker.get_datetime(
+            ), 'High'] = ticker.get_mid_price()
 
-        elif self._candles.loc[ticker.datetime]['Low'] > ticker.mid_price:
-            self._candles.loc[ticker.datetime, 'Low'] = ticker.mid_price
+        elif self._candles.loc[ticker.get_datetime()]['Low'] > ticker.get_mid_price():
+            self._candles.loc[ticker.get_datetime(
+            ), 'Low'] = ticker.get_mid_price()
 
-        self._candles.loc[ticker.datetime, 'Close'] = ticker.mid_price
-        self._candles.loc[ticker.datetime, 'Volume'] = ticker.volume
+        self._candles.loc[ticker.get_datetime(
+        ), 'Close'] = ticker.get_mid_price()
+        self._candles.loc[ticker.get_datetime(
+        ), 'Volume'] = ticker.get_volume()
 
         return self._candles
 
-    def is_new_generated(self):
+    def is_new_generated(self) -> bool:
         return self._is_generated
 
-    def get_all_candles(self):
+    def get_all_candles(self) -> pd.DataFrame:
         return self._candles
 
     def get_candle_from_date_scope(self, start_date: str, end_date: str = None) -> pd.DataFrame:

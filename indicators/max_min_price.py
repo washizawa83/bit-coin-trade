@@ -12,8 +12,8 @@ class MaxMin:
         self._candles.index.name = 'Date'
 
     @classmethod
-    def extraction_max_min_from_trend_histories(cls, candles: pd.DataFrame, trend_history: TrendHistory):
-        histories = trend_history.get_history()
+    def _extraction_max_min_from_trend_histories(cls, candles: pd.DataFrame, trend_history: TrendHistory):
+        histories = trend_history.get_histories()
         max_min_date = ''
         max_min_price = 0
 
@@ -30,12 +30,12 @@ class MaxMin:
 
     @classmethod
     def create_max_min(cls, candles: pd.DataFrame, trend_history: TrendHistory):
-        max_min_date, max_min_price = cls.extraction_max_min_from_trend_histories(
+        max_min_date, max_min_price = cls._extraction_max_min_from_trend_histories(
             candles, trend_history)
         return cls(max_min_date, max_min_price)
 
     def update_max_min(self, candles: pd.DataFrame, trend_history: TrendHistory):
-        max_min_date, max_min_price = self.extraction_max_min_from_trend_histories(
+        max_min_date, max_min_price = self._extraction_max_min_from_trend_histories(
             candles, trend_history)
 
         new_max_min = {

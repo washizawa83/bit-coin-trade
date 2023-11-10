@@ -10,10 +10,10 @@ from .settings import Settings
 
 class ApiClient:
     def __init__(self) -> None:
-        self.settings = Settings()
+        self._settings = Settings()
         self._api = pybitflyer.API(
-            api_key=self.settings.api_key,
-            api_secret=self.settings.api_secret
+            api_key=self._settings.api_key,
+            api_secret=self._settings.api_secret
         )
 
     def fetch_ticker(self):
@@ -22,7 +22,7 @@ class ApiClient:
         except:
             print('Error fetch_ticker function is class ApiClient')
 
-    def get_balance(self, mid_price):
+    def get_balance(self, mid_price: float):
         balance = self._api.getbalance()
         jpy = balance[0]['amount']
         btc = balance[1]['amount']
@@ -53,10 +53,10 @@ class ApiClient:
         return order
 
     def order_histories(self) -> list:
-        convert_date = ConvertDate()
         side_status = {'BUY': '買い', 'SELL': '売り'}
         order_status = {'COMPLETED': '取引済み', 'CANCELED': 'キャンセル',
                         'EXPIRED': '有効期限切れ', 'REJECTED': '取引失敗'}
+        convert_date = ConvertDate()
         histories_data = self._api.getchildorders()
         histories = []
         for history in histories_data:

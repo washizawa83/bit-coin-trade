@@ -34,8 +34,8 @@ class Trade:
             print(trend.is_up_trend())
 
             trend_history.change_history(trend)
-            print(trend_history.get_history())
-            if None not in trend_history.get_history():
+            print(trend_history.get_histories())
+            if None not in trend_history.get_histories():
                 is_collected_data = True
 
         return candle, trend, trend_history
