@@ -12,7 +12,7 @@ from indicators.trend import Trend, TrendHistory
 class Trade:
     ax = None
     candle = None
-    max_min = None
+    max_min: MaxMin = None
 
     def collection_data(self):
         ticker = Ticker.create_ticker()
@@ -37,12 +37,11 @@ class Trade:
             else:
                 trend = trend.check_trend(
                     candles, sma, trend.is_up_trend())
-            print(trend.is_up_trend())
+
             trend_history.change_history(trend)
             if None not in trend_history.get_histories():
                 is_collected_data = True
-                max_min = MaxMin.create_max_min(candles, trend_history)
-                print(max_min.get_max_min())
+                self.max_min = MaxMin.create_max_min(candles, trend_history)
 
         return trend, trend_history
 
@@ -60,12 +59,15 @@ class Trade:
             trend = Trend.check_trend(
                 candles, sma, trend.is_up_trend())
             trend_history.change_history(trend)
+            if trend_history.is_changed():
+                self.max_min.update_max_min(candles, trend_history)
+                print(self.max_min.get_max_min())
 
     def start(self):
         trend, trend_history = self.collection_data()
         self.trade(trend, trend_history)
 
-    def start_gui(self):
+    def start_plot(self):
         tread_thread = threading.Thread(target=self.start)
         tread_thread.start()
 

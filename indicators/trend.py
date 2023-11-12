@@ -44,15 +44,21 @@ class TrendHistory:
     def __init__(self, prevent_trend: Optional[Trend] = None, current_trend: Optional[Trend] = None) -> None:
         self._current_trend = current_trend
         self._prevent_trend = prevent_trend
+        self._is_cahnged = False
+
+    def is_changed(self):
+        return self._is_cahnged
 
     def change_history(self, current_trend: Optional[Trend]):
         if self._current_trend is None:
             self._current_trend = current_trend
         if self._current_trend.is_up_trend() == current_trend.is_up_trend():
+            self._is_cahnged = False
             return
 
         self._prevent_trend = self._current_trend
         self._current_trend = current_trend
+        self._is_cahnged = True
 
     def get_histories(self) -> list[Trend]:
         return [self._current_trend, self._prevent_trend]

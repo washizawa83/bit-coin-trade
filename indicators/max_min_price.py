@@ -39,13 +39,13 @@ class MaxMin:
         new_max_min = {
             max_min_date: [max_min_price]
         }
-        pd.concat([self._max_min,
-                   pd.DataFrame.from_dict(
-                       new_max_min,
-                       orient='index',
-                       columns=['Price']
-                   )]
-                  )
+        self._max_min = pd.concat([self._max_min,
+                                   pd.DataFrame.from_dict(
+                                       new_max_min,
+                                       orient='index',
+                                       columns=['Price']
+                                   )]
+                                  )
 
     def get_max_min(self):
         return self._max_min
