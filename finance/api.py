@@ -4,7 +4,6 @@ import pandas as pd
 import pybitflyer
 
 from utils.date_utils import ConvertDate
-
 from .settings import Settings
 
 

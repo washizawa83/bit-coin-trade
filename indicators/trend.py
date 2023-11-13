@@ -1,7 +1,7 @@
 from typing import Optional
 import pandas as pd
 
-from .indicators import Sma
+from indicators.sma import Sma
 
 
 class Trend:

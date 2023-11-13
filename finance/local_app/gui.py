@@ -1,9 +1,7 @@
-import time
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 import mplfinance as mpf
 
-from finance.finance import Candle
 from finance.settings import Settings
 
 
@@ -24,6 +22,7 @@ class ChartPlot:
                               'alpha': 0.9},
              'mavcolors': None,
              'facecolor': '#333',
+             'edgecolor': '#333',
              'figcolor': '#333',
              'gridcolor': '#666',
              'gridstyle': None,
@@ -32,9 +31,9 @@ class ChartPlot:
                     'axes.grid':  True,
                     'axes.grid.axis': 'y',
                     'axes.labelcolor': 'white',
-                    'xtick.color': 'white',
-                    'ytick.color': 'white',
-                    'grid.color': '#000000',
+                    'xtick.color': '#ccc',
+                    'ytick.color': '#ccc',
+                    'grid.color': '#ccc',
                     'grid.linestyle': '-'
                     },
              'base_mpf_style': 'None'
@@ -56,22 +55,12 @@ class ChartPlot:
                      type='candle', mav=cls.settings.sma_duration, ax=cls.ax, style=cls.style)
 
     @classmethod
-    def plot(cls, candle: Candle):
-        cls.candle = candle
-        fig, axes = mpf.plot(candle.get_all_candles(), returnfig=True, type='candle',
-                             figsize=(11.5, 3.5), style=cls.style)
-        cls.ax = axes[0]
-        ani = FuncAnimation(fig, cls.update_plot,
-                            interval=1000, cache_frame_data=False)
-        plt.show()
-
-    @classmethod
-    def plot2(cls, trade):
+    def plot(cls, trade):
         cls.trade = trade
         cls.candle = trade.candle
 
         fig, axes = mpf.plot(cls.candle.get_all_candles(), returnfig=True, type='candle',
-                             figsize=(11.5, 3.5), style=cls.style)
+                             figratio=(20, 10), style=cls.style)
         cls.ax = axes[0]
         ani = FuncAnimation(fig, cls.update_plot,
                             interval=1000, cache_frame_data=False)

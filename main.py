@@ -13,4 +13,4 @@ if __name__ == '__main__':
     while trade.candle is None:
         time.sleep(1)
 
-    ChartPlot.plot2(trade)
+    ChartPlot.plot(trade)

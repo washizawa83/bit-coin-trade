@@ -1,10 +1,9 @@
-import threading
 import time
 
 from finance.finance import Candle, Ticker
-from finance.local_app.gui import ChartPlot
 from finance.settings import Settings
-from indicators.indicators import Sma
+from indicators.parabolic_sar import ParabolicSAR
+from indicators.sma import Sma
 from indicators.max_min_price import MaxMin
 from indicators.trend import Trend, TrendHistory
 
@@ -13,6 +12,7 @@ class Trade:
     ax = None
     candle = None
     max_min: MaxMin = None
+    sar: ParabolicSAR = None
 
     def collection_data(self):
         ticker = Ticker.create_ticker()
@@ -42,6 +42,8 @@ class Trade:
             if None not in trend_history.get_histories():
                 is_collected_data = True
                 self.max_min = MaxMin.create_max_min(candles, trend_history)
+                self.sar = ParabolicSAR.create_sar(
+                    self.candle, self.max_min, trend)
 
         return trend, trend_history
 
@@ -66,13 +68,3 @@ class Trade:
     def start(self):
         trend, trend_history = self.collection_data()
         self.trade(trend, trend_history)
-
-    def start_plot(self):
-        tread_thread = threading.Thread(target=self.start)
-        tread_thread.start()
-
-        # キャンドルが作成されるまで待機
-        while self.candle is None:
-            time.sleep(1)
-
-        ChartPlot.plot(self.candle)
