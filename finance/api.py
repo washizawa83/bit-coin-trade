@@ -22,7 +22,11 @@ class ApiClient:
             print('Error fetch_ticker function is class ApiClient')
 
     def get_balance(self, mid_price: float):
-        balance = self._api.getbalance()
+        try:
+            balance = self._api.getbalance()
+        except:
+            print('Error get_balance function is class ApiClient')
+            return
         jpy = balance[0]['amount']
         btc = balance[1]['amount']
         delta = int(mid_price * btc)
@@ -30,33 +34,45 @@ class ApiClient:
         return jpy, btc, total, delta
 
     def buy_order(self):
-        order = self._api.sendchildorder(
-            product_code='BTC_JPY',
-            child_order_type='MARKET',
-            side='BUY',
-            size=0.001,
-            minute_to_expire=10000,
-            time_in_force='GTC'
-        )
-        return order
+        try:
+            order = self._api.sendchildorder(
+                product_code='BTC_JPY',
+                child_order_type='MARKET',
+                side='BUY',
+                size=0.001,
+                minute_to_expire=10000,
+                time_in_force='GTC'
+            )
+            return order
+        except:
+            print('Error buy_order function is class ApiClient')
+            return
 
     def sell_order(self):
-        order = self._api.sendchildorder(
-            product_code='BTC_JPY',
-            child_order_type='MARKET',
-            side='SELL',
-            size=0.001,
-            minute_to_expire=10000,
-            time_in_force='GTC'
-        )
-        return order
+        try:
+            order = self._api.sendchildorder(
+                product_code='BTC_JPY',
+                child_order_type='MARKET',
+                side='SELL',
+                size=0.001,
+                minute_to_expire=10000,
+                time_in_force='GTC'
+            )
+            return order
+        except:
+            print('Error sell_order function is class ApiClient')
+            return
 
     def order_histories(self) -> list:
         side_status = {'BUY': '買い', 'SELL': '売り'}
         order_status = {'COMPLETED': '取引済み', 'CANCELED': 'キャンセル',
                         'EXPIRED': '有効期限切れ', 'REJECTED': '取引失敗'}
         convert_date = ConvertDate()
-        histories_data = self._api.getchildorders()
+        try:
+            histories_data = self._api.getchildorders()
+        except:
+            print('Error order_histories function is class ApiClient')
+            return
         histories = []
         for history in histories_data:
             date = pd.Timestamp(

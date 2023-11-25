@@ -41,17 +41,27 @@ class ChartPlot:
 
     @classmethod
     def update_plot(cls, frame):
+        add_plots = []
         cls.ax.clear()
+        candles = cls.candle.get_all_candles()
+        # 高値・安値
         if cls.trade.max_min is not None:
-            candles = cls.candle.get_all_candles()
             max_min = cls.trade.max_min.get_max_min()
             join = candles.join(max_min)
-            add_plot = mpf.make_addplot(
-                join['Price'], ax=cls.ax, type='scatter', markersize=150, marker='.', color='#049DBF')
-            mpf.plot(cls.candle.get_all_candles(), type='candle',
-                     mav=cls.settings.sma_duration, ax=cls.ax, style=cls.style, addplot=add_plot)
+            add_plots.append(mpf.make_addplot(
+                join['Price'], ax=cls.ax, type='scatter', markersize=150, marker='.', color='#049DBF'))
+        # パラボリックSAR
+        if cls.trade.sar is not None:
+            sar = cls.trade.sar.get_all_sar()
+            join = candles.join(sar)
+            add_plots.append(mpf.make_addplot(
+                join['Sar'], ax=cls.ax, type='scatter', markersize=5, marker='s', color='#ffd700'))
+
+        if len(add_plots) > 0:
+            mpf.plot(candles, type='candle',
+                     mav=cls.settings.sma_duration, ax=cls.ax, style=cls.style, addplot=add_plots)
         else:
-            mpf.plot(cls.candle.get_all_candles(),
+            mpf.plot(candles,
                      type='candle', mav=cls.settings.sma_duration, ax=cls.ax, style=cls.style)
 
     @classmethod

@@ -59,20 +59,26 @@ class Candle:
         self._candles.index.name = 'Date'
         self._is_generated = False
 
+    def new_candle(self, ticker: Ticker):
+        mid_price = ticker.get_mid_price()
+        prevent_close_price = self._candles.iloc[-1]['Close']
+        new_ticker = {
+            ticker.get_datetime(): [
+                mid_price if prevent_close_price <= mid_price else prevent_close_price,
+                prevent_close_price,
+                mid_price if mid_price <= prevent_close_price else prevent_close_price,
+                mid_price,
+                ticker.get_volume()
+            ]
+        }
+        return new_ticker
+
     def create_candle(self, ticker: Ticker) -> pd.DataFrame:
         if ticker.get_datetime() in self._candles.index:
             self._is_generated = False
             return self._update_candle(ticker)
 
-        new_ticker = {
-            ticker.get_datetime(): [
-                ticker.get_mid_price(),
-                ticker.get_mid_price(),
-                ticker.get_mid_price(),
-                ticker.get_mid_price(),
-                ticker.get_volume()
-            ]
-        }
+        new_ticker = self.new_candle(ticker)
         self._candles = pd.concat(
             [self._candles,
              pd.DataFrame.from_dict(

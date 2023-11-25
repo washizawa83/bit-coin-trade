@@ -42,9 +42,7 @@ class Trade:
             if None not in trend_history.get_histories():
                 is_collected_data = True
                 self.max_min = MaxMin.create_max_min(candles, trend_history)
-                self.sar = ParabolicSAR.create_sar(
-                    self.candle, self.max_min, trend)
-
+        self.sar = ParabolicSAR.create_sar(self.candle, self.max_min, trend)
         return trend, trend_history
 
     def trade(self, trend: Trend, trend_history: TrendHistory):
@@ -58,12 +56,12 @@ class Trade:
                 continue
 
             sma = Sma.create_sma(candles, settings.sma_duration)
+            self.sar.update_sar(self.candle)
             trend = Trend.check_trend(
                 candles, sma, trend.is_up_trend())
             trend_history.change_history(trend)
             if trend_history.is_changed():
                 self.max_min.update_max_min(candles, trend_history)
-                print(self.max_min.get_max_min())
 
     def start(self):
         trend, trend_history = self.collection_data()

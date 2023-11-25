@@ -61,7 +61,7 @@ class ParabolicSAR:
         if self._current_trend.is_up_trend():
             current_candle = candle.get_all_candles().iloc[-2]
             # 転換した場合
-            if current_candle['Low'] < self._sar.iloc[-1]['Price']:
+            if current_candle['Low'] < self._sar.iloc[-1]['Sar']:
                 self._convert_sar(current_candle)
                 return
 
@@ -74,7 +74,7 @@ class ParabolicSAR:
         else:
             current_candle = candle.get_all_candles().iloc[-2]
             # 転換した場合
-            if self._sar.iloc[-1]['Price'] < current_candle['High']:
+            if self._sar.iloc[-1]['Sar'] < current_candle['High']:
                 self._convert_sar(current_candle)
                 return
 

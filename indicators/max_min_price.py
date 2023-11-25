@@ -14,15 +14,17 @@ class MaxMin:
     @classmethod
     def _extraction_max_min_from_trend_histories(cls, candles: pd.DataFrame, trend_history: TrendHistory):
         histories = trend_history.get_histories()
+        start_candle_index = candles.index.get_loc(histories[1].get_date()) - 1
+        start_candle_index_name = candles.iloc[start_candle_index].name
 
         if histories[0].is_up_trend():
-            min_price_date = candles[histories[1].get_date(
-            ): histories[0].get_date()]['Low'].idxmin()
+            min_price_date = candles[start_candle_index_name: histories[0].get_date(
+            )]['Low'].idxmin()
             min_price = candles.loc[min_price_date]['Low']
             return min_price_date, min_price
         else:
-            max_price_date = candles[histories[1].get_date(
-            ): histories[0].get_date()]['High'].idxmax()
+            max_price_date = candles[start_candle_index_name: histories[0].get_date(
+            )]['High'].idxmax()
             max_price = candles.loc[max_price_date]['High']
             return max_price_date, max_price
 
